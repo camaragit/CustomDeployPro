@@ -12,20 +12,46 @@ export class HomePage {
     this.checkForUpdate();
   }
   async checkForUpdate() {
-    const update = await Pro.deploy.checkForUpdate()
-    if (update.available){
-      // We have an update!
+    try {
+      const update = await Pro.deploy.checkForUpdate()
+      if (update.available){
+        // We have an update!
 
-      console.log("checkForUpdate ===> Mis a jour dispo")
-      await Pro.deploy.downloadUpdate((progress) => {
-        console.log("Progression"+JSON.stringify(progress));
-      })
-      await Pro.deploy.extractUpdate((progress) => {
-        console.log(progress);
-      })
-      await Pro.deploy.reloadApp();
+        console.log("checkForUpdate ===> Mis a jour dispo");
+        try {
+          await Pro.deploy.downloadUpdate((progress) => {
+            console.log("Progression telechargement "+JSON.stringify(progress));
+          })
+          try{
+            await Pro.deploy.extractUpdate((progress) => {
+              console.log("Progression telechargement "+progress);
+            })
+            try {
+              await Pro.deploy.reloadApp();
+            }
+            catch (err){
+              console.log("Erreur extractUpdate "+JSON.stringify(err))
+
+            }
+
+          }
+          catch (err){
+            console.log("Erreur extractUpdate "+JSON.stringify(err))
+          }
+
+
+        }
+        catch (err){
+          console.log("Erreur downloadUpdate "+JSON.stringify(err))
+        }
+
+      }
+      else  console.log("checkForUpdate ===> Pas de Mis a jour dispo")
     }
-    else  console.log("checkForUpdate ===> Pas de Mis a jour dispo")
+    catch (err){
+      console.log("Erreur checkForUpdate "+JSON.stringify(err))
+    }
+
 
   }
 }
